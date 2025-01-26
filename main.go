@@ -24,53 +24,54 @@ var albums = []album{
 }
 
 // getAlbums responds with the list of all albums as JSON.
-func getAlbums(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, albums)
+func getAlbums(context *gin.Context) {
+	context.IndentedJSON(http.StatusOK, albums)
 }
 
-func showServerMain(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, "Welcome to my API")
+func showServerMain(context *gin.Context) {
+	context.IndentedJSON(http.StatusOK, "Welcome to my API")
 }
 
-func addNewAlbum(c *gin.Context) {
+func addNewAlbum(context *gin.Context) {
+	// Create new variable to hold the type of album for new album to be added
 	var newAlbum album
 
-	if err := c.BindJSON(&newAlbum); err != nil {
+	if err := context.BindJSON(&newAlbum); err != nil {
 		return
 	}
 
 	albums = append(albums, newAlbum)
-	c.IndentedJSON(http.StatusCreated, newAlbum)
+	context.IndentedJSON(http.StatusCreated, newAlbum)
 }
 
-func getAlbumDetails(c *gin.Context) {
-	id := c.Param("id")
+func getAlbumDetails(context *gin.Context) {
+	id := context.Param("id")
 
 	if id == "" {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Album ID is required"})
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Album ID is required"})
 	}
 
 	for _, album := range albums {
 		if album.ID == id {
-			c.IndentedJSON(http.StatusOK, album)
+			context.IndentedJSON(http.StatusOK, album)
 			return
 		}
 	}
 
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Album not found"})
+	context.IndentedJSON(http.StatusNotFound, gin.H{"message": "Album not found"})
 }
 
-func updateAlbum(c *gin.Context) {
-	id := c.Param("id")
+func updateAlbum(context *gin.Context) {
+	id := context.Param("id")
 
 	if id == "" {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Album ID is required"})
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Album ID is required"})
 	}
 
 	var albumToUpdate map[string]interface{}
 
-	if err := c.BindJSON(&albumToUpdate); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
+	if err := context.BindJSON(&albumToUpdate); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
 		return
 	}
 
@@ -92,30 +93,30 @@ func updateAlbum(c *gin.Context) {
 				}
 			}
 
-			c.IndentedJSON(http.StatusOK, albums[i])
+			context.IndentedJSON(http.StatusOK, albums[i])
 			return
 		}
 	}
 
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Album not found"})
+	context.IndentedJSON(http.StatusNotFound, gin.H{"message": "Album not found"})
 }
 
-func deleteAlbum(c *gin.Context) {
-	id := c.Param("id")
+func deleteAlbum(context *gin.Context) {
+	id := context.Param("id")
 
 	if id == "" {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Album ID is required"})
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Album ID is required"})
 	}
 
 	for i, album := range albums {
 		if album.ID == id {
 			albums = append(albums[:i], albums[i+1:]...)
-			c.IndentedJSON(http.StatusOK, gin.H{"message": "Album deleted successfully"})
+			context.IndentedJSON(http.StatusOK, gin.H{"message": "Album deleted successfully"})
 			return
 		}
 	}
 
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Album not found"})
+	context.IndentedJSON(http.StatusNotFound, gin.H{"message": "Album not found"})
 }
 
 func main() {
